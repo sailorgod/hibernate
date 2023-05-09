@@ -4,12 +4,11 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-public class Main {
-    public static void main(String[] args) {
-        StandardServiceRegistry registry =
-                new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
-        Metadata metadata = new MetadataSources(registry).getMetadataBuilder().build();
-        SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
-
+public class Main
+{
+    public static void main(String[] args)
+    {
+        HibernateSession session = new HibernateSession();
+        session.getSession().close();
     }
 }

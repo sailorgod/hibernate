@@ -1,6 +1,4 @@
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,11 +10,16 @@ import java.util.Date;
 @Table(name = "Subscriptions")
 public class Subscriptions {
 
-    @Column(name = "student_id")
-    private int studentId;
+    @EmbeddedId
+    private SubscriptionKey id;
 
-    @Column(name = "course_id")
-    private int courseId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "student_id", insertable=false, updatable=false)
+    private Student student;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "course_id", insertable=false, updatable=false)
+    private Course course;
 
     @Column(name = "subscription_date")
     private Date subscriptionDate;

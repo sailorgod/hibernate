@@ -3,6 +3,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @Table(name = "Courses")
 public class Course {
@@ -11,32 +12,25 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Setter
     private String name;
 
-    @Setter
     private int duration;
 
-    @Setter
+    @Column(name = "course_type")
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum")
     private CourseType type;
 
-    @Setter
     private String description;
 
-    @Setter
-    @Column(name = "teacher_id")
-    private int teacherId;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "teacher_id")
+    private Teacher teacherId;
 
-    @Setter
     @Column(name = "students_count")
     private int studentsCount;
 
-    @Setter
     private int price;
 
-    @Setter
     @Column(name = "price_per_hour")
     private double pricePerHour;
 

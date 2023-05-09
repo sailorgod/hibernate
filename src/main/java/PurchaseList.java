@@ -1,17 +1,14 @@
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.util.Date;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "PurchaseList")
-public class PurchaseList {
-
+public class PurchaseList
+{
     @Column(name = "student_name")
     private String studentName;
 
