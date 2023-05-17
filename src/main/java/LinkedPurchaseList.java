@@ -1,18 +1,27 @@
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Date;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "LinkedPurchaseList")
-public class LinkedPurchaseList {
+@Table(name = "Linked_Purchase_List")
+public class LinkedPurchaseList
+{
+    @EmbeddedId
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private LinkedPurchaseListPK id;
 
-    @Column(name = "student_id")
-    private int studentId;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumns({
+            @JoinColumn(name = "student_name", referencedColumnName = "student_name"),
+            @JoinColumn(name = "course_name", referencedColumnName = "course_name"),
+            @JoinColumn(name = "subscription_date", referencedColumnName = "subscription_date")
+    })
+    private PurchaseList purchaseList;
 
-    @Column(name = "course_id")
-    private int courseId;
+    private int price;
+
 }

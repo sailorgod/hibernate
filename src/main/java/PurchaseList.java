@@ -9,15 +9,10 @@ import java.util.Date;
 @Table(name = "PurchaseList")
 public class PurchaseList
 {
-    @Column(name = "student_name")
-    private String studentName;
+    @EmbeddedId
+    PurchaseListKey key;
 
-    @Column(name =  "course_name")
-    private String courseName;
-
+    @Column(name = "price")
     private int price;
-
-    @Column(name = "subscription_date")
-    private Date subscriptionDate;
 
 }

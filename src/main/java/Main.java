@@ -1,14 +1,62 @@
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.Metadata;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
 
 public class Main
 {
     public static void main(String[] args)
     {
         HibernateSession session = new HibernateSession();
+
+        CriteriaBuilder criteriaBuilder = session.getSession().getCriteriaBuilder();
+        CriteriaQuery<PurchaseList> purchaseListSelector = criteriaBuilder.createQuery(PurchaseList.class);
+        Root<PurchaseList> purchaseListRoot = purchaseListSelector.from(PurchaseList.class);
+        purchaseListSelector.select(purchaseListRoot);
+
+        CriteriaQuery<Subscriptions> subscriptionsSelector = criteriaBuilder.createQuery(Subscriptions.class);
+        Root<Subscriptions> subscriptionsRoot = subscriptionsSelector.from(Subscriptions.class);
+        subscriptionsSelector.select(subscriptionsRoot);
+
+        List<PurchaseList> purchaseListResults = session.getSession().createQuery(purchaseListSelector).getResultList();
+        Collections.sort(purchaseListResults,
+                (o1, o2) -> o1.getKey().getStudentName().compareTo(o2.getKey().getStudentName()));
+        List<Subscriptions> subscriptionsResults =  session.getSession().createQuery(subscriptionsSelector).getResultList();
+        Collections.sort(subscriptionsResults,
+                (o1, o2) -> o1.getStudent().getName().compareTo(o2.getStudent().getName()));
+
+
+        purchaseListResults.forEach(purchaseList -> {
+            LinkedPurchaseList linkedPurchaseList = new LinkedPurchaseList();
+            linkedPurchaseList.setId(getLinkedPurchaseListPK(subscriptionsResults, purchaseList));
+            linkedPurchaseList.setPurchaseList(purchaseList);
+            linkedPurchaseList.setPrice(purchaseList.getPrice());
+            session.getSession().merge(linkedPurchaseList);
+        });
+
+        session.getTransaction().commit();
         session.getSession().close();
+    }
+
+    private static LinkedPurchaseListPK getLinkedPurchaseListPK(List<Subscriptions> subscriptionsList, PurchaseList purchaseList) {
+        LinkedPurchaseListPK purchaseListPK = new LinkedPurchaseListPK();
+        for (Subscriptions sub:
+             subscriptionsList)
+        {
+            String studentName = purchaseList.getKey().getStudentName();
+            String courseName = purchaseList.getKey().getCourseName();
+            Date subscriptionDate = purchaseList.getKey().getSubscriptionDate();
+            if (sub.getStudent().equals(studentName) &&
+                    sub.getCourse().equals(courseName) &&
+                    sub.getSubscriptionDate().equals(subscriptionDate)) {
+                purchaseListPK.setStudentId(sub.getId().getStudentId().getId());
+                purchaseListPK.setCourseId(sub.getId().getCourseId().getId());
+            }
+        }
+        return purchaseListPK;
     }
 }
